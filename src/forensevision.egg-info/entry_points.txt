@@ -1,0 +1,2 @@
+[console_scripts]
+fv = forensevision.main:main

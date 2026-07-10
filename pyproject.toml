@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "forensevision"
+version = "0.1.0"
+description = "Framework profesional para informática forense basada en IA y Visión Artificial."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+
+authors = [
+    { name = "José López" }
+]
+
+dependencies = [
+    "PyYAML",
+    "typer",
+]
+
+[project.scripts]
+fv = "forensevision.main:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

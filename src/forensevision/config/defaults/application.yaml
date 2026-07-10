@@ -1,0 +1,24 @@
+application:
+  name: "ForenseVisión"
+
+  version: "0.1.0"
+
+  environment: "development"
+
+  debug: true
+
+paths:
+
+  models: "./models"
+
+  logs: "./logs"
+
+  plugins: "./plugins"
+
+logging:
+
+  level: "INFO"
+
+  console: true
+
+  file: true
