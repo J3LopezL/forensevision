@@ -1,0 +1,58 @@
+@startuml
+title ForenseVisión - Arquitectura General
+
+package "Kernel" {
+    class Application
+    class Bootstrap
+    class ApplicationContext
+    class Container
+    class Registry
+    class Configuration
+    class Logger
+}
+
+package "Platform" {
+    package "Vision" {
+    }
+
+    package "AI" {
+    }
+
+    package "OCR" {
+    }
+
+    package "Tracking" {
+    }
+
+    package "Forensics" {
+    }
+
+    package "Reporting" {
+    }
+}
+
+package "Interfaces" {
+    class CLI
+    class API
+    class GUI
+}
+
+package "Plugins" {
+    class PluginManager
+}
+
+Application --> Bootstrap
+Bootstrap --> ApplicationContext
+
+ApplicationContext --> Container
+ApplicationContext --> Registry
+ApplicationContext --> Configuration
+ApplicationContext --> Logger
+
+CLI ..> Application
+API ..> Application
+GUI ..> Application
+
+PluginManager ..> Container
+
+@enduml

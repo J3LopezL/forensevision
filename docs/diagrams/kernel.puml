@@ -1,0 +1,31 @@
+@startuml
+
+title ForenseVisión - Kernel
+
+class Application
+
+class Bootstrap
+
+class ApplicationContext
+
+class Configuration
+
+class Container
+
+class Registry
+
+class Logger
+
+Application --> Bootstrap
+
+Bootstrap --> ApplicationContext
+
+ApplicationContext --> Configuration
+
+ApplicationContext --> Container
+
+ApplicationContext --> Registry
+
+ApplicationContext --> Logger
+
+@enduml
