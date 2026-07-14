@@ -1,24 +1,89 @@
 """
-Administración centralizada de rutas del Framework.
+Administración centralizada de rutas de ForenseVisión.
 """
 
+from __future__ import annotations
+
+from dataclasses import dataclass
 from pathlib import Path
 
 
-class Paths:
+@dataclass(frozen=True, slots=True)
+class ProjectPaths:
+    """
+    Representa la topología de directorios del proyecto.
+    """
 
-    ROOT = Path(__file__).resolve().parents[3]
+    root: Path
 
-    SRC = ROOT / "src"
+    def __init__(
+        self,
+        root: Path | None = None,
+    ) -> None:
+        resolved_root = (
+            root
+            if root is not None
+            else Path(__file__).resolve().parents[3]
+        )
 
-    CONFIG = ROOT / "config"
+        object.__setattr__(
+            self,
+            "root",
+            resolved_root.resolve(),
+        )
 
-    MODELS = ROOT / "models"
+    @property
+    def src(self) -> Path:
+        """
+        Obtiene el directorio de código fuente.
+        """
 
-    LOGS = ROOT / "logs"
+        return self.root / "src"
 
-    DOCS = ROOT / "docs"
+    @property
+    def config(self) -> Path:
+        """
+        Obtiene el directorio de configuración.
+        """
 
-    TESTS = ROOT / "tests"
+        return self.root / "config"
 
-    PLUGINS = ROOT / "plugins"
+    @property
+    def models(self) -> Path:
+        """
+        Obtiene el directorio de modelos.
+        """
+
+        return self.root / "models"
+
+    @property
+    def logs(self) -> Path:
+        """
+        Obtiene el directorio de logs.
+        """
+
+        return self.root / "logs"
+
+    @property
+    def docs(self) -> Path:
+        """
+        Obtiene el directorio de documentación.
+        """
+
+        return self.root / "docs"
+
+    @property
+    def tests(self) -> Path:
+        """
+        Obtiene el directorio de pruebas.
+        """
+
+        return self.root / "tests"
+
+    @property
+    def plugins(self) -> Path:
+        """
+        Obtiene el directorio de plugins.
+        """
+
+        return self.root / "plugins"
