@@ -1,24 +1,29 @@
 """
-Contexto de ejecución del Framework.
+Contexto de ejecución de ForenseVisión.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+import logging
 
 from forensevision.config.configuration import Configuration
+from forensevision.core.container import Container
 from forensevision.core.registry import Registry
-from logging import Logger
 
 
-@dataclass
 class ApplicationContext:
     """
-    Contiene todos los servicios activos del Framework.
+    Agrupa las dependencias fundamentales de la aplicación.
     """
 
-    configuration: Configuration
-
-    registry: Registry
-
-    logger: Logger
+    def __init__(
+        self,
+        configuration: Configuration,
+        container: Container,
+        registry: Registry[object],
+        logger: logging.Logger,
+    ) -> None:
+        self.configuration = configuration
+        self.container = container
+        self.registry = registry
+        self.logger = logger

@@ -1,25 +1,29 @@
 """
-Contrato base para cualquier componente del Framework.
+Contrato base de los componentes de ForenseVisión.
 """
 
 from __future__ import annotations
 
-from abc import ABC
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 
 class Component(ABC):
     """
-    Todo componente del Framework debe proporcionar
-    información básica sobre sí mismo.
+    Contrato base para componentes identificables del Framework.
     """
 
     @property
     @abstractmethod
     def name(self) -> str:
-        """Nombre del componente."""
+        """
+        Obtiene el nombre lógico único del componente.
+        """
+        ...
 
     @property
     @abstractmethod
     def version(self) -> str:
-        """Versión del componente."""
+        """
+        Obtiene la versión del componente.
+        """
+        ...

@@ -1,62 +1,54 @@
 """
-Inicialización del Framework.
+Inicialización de la plataforma ForenseVisión.
 """
 
 from __future__ import annotations
 
 from forensevision.config.configuration import Configuration
-from forensevision.core.paths import Paths
-from forensevision.core.registry import Registry
-from forensevision.logging.logger import Logger
-from forensevision.interfaces.service import Service
 from forensevision.core.application_context import ApplicationContext
+from forensevision.core.container import Container
+from forensevision.core.paths import ProjectPaths
+from forensevision.core.registry import Registry
+from forensevision.logging.logger import ForensicLogger
 
-    
-class Bootstrap(Service):
+
+class Bootstrap:
     """
-    Inicializa los componentes fundamentales del Framework.
+    Construye las dependencias fundamentales de la aplicación.
     """
 
-    @property
-    def name(self) -> str:
-        return "Bootstrap"
-
-    @property
-    def version(self) -> str:
-        return "0.1.0"
-
-    def __init__(self):
+    def __init__(self) -> None:
+        self.paths = ProjectPaths()
 
         self.configuration = Configuration(
-            Paths.CONFIG / "default" / "application.yaml"
+            self.paths.config / "settings.yaml"
         )
 
-        self.registry = Registry()
+        self.container = Container()
+        self.registry: Registry[object] = Registry()
 
-        self.logger = None
+        self.forensic_logger = ForensicLogger(
+            self.paths.logs
+        )
 
-    def initialize(self):
+    def initialize(self) -> ApplicationContext:
+        """
+        Inicializa la infraestructura base de la aplicación.
+        """
 
         self.configuration.load()
 
-        Logger.configure(Paths.LOGS)
-
-        self.logger = Logger.get("forensevision")
-
-        self.registry.register(
-            "configuration",
-            self.configuration,
+        logger = self.forensic_logger.get(
+            "application"
         )
 
-        self.registry.register(
-            "logger",
-            self.logger,
+        logger.info(
+            "Inicializando ForenseVisión."
         )
-
-        self.logger.info("Framework inicializado.")
 
         return ApplicationContext(
-    	    configuration=self.configuration,
+            configuration=self.configuration,
+            container=self.container,
             registry=self.registry,
-            logger=self.logger,
+            logger=logger,
         )

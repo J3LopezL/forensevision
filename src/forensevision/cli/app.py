@@ -14,16 +14,23 @@ app = typer.Typer(
 
 
 @app.command()
-def version():
+def version() -> None:
     """
     Muestra la versión instalada.
     """
-    typer.echo(f"ForenseVisión {__version__}")
+
+    typer.echo(
+        f"ForenseVisión {__version__}"
+    )
 
 
 @app.command()
-def info():
+def info() -> None:
     """
-    Información general del framework.
+    Muestra información general del framework.
     """
-    typer.echo("Framework profesional para análisis multimedia forense.")
+
+    typer.echo(
+        "Framework profesional para análisis "
+        "multimedia forense."
+    )
