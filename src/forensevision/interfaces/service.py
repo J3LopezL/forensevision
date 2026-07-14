@@ -1,16 +1,17 @@
 """
-Contrato base para todos los servicios del Framework.
+Contrato base de los servicios de ForenseVisión.
 """
 
 from __future__ import annotations
 
-from abc import ABC
 from abc import abstractmethod
 
+from forensevision.interfaces.component import Component
 
-class Service(ABC):
+
+class Service(Component):
     """
-    Interfaz base de cualquier servicio.
+    Contrato base para servicios inicializables.
     """
 
     @abstractmethod
@@ -18,4 +19,4 @@ class Service(ABC):
         """
         Inicializa el servicio.
         """
-        raise NotImplementedError()
+        ...

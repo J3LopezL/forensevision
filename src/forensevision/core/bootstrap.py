@@ -5,13 +5,13 @@ Inicialización del Framework.
 from __future__ import annotations
 
 from forensevision.config.configuration import Configuration
+from forensevision.core.application_context import ApplicationContext
 from forensevision.core.paths import Paths
 from forensevision.core.registry import Registry
-from forensevision.logging.logger import Logger
 from forensevision.interfaces.service import Service
-from forensevision.core.application_context import ApplicationContext
+from forensevision.logging.logger import Logger
 
-    
+
 class Bootstrap(Service):
     """
     Inicializa los componentes fundamentales del Framework.
@@ -56,7 +56,7 @@ class Bootstrap(Service):
         self.logger.info("Framework inicializado.")
 
         return ApplicationContext(
-    	    configuration=self.configuration,
+            configuration=self.configuration,
             registry=self.registry,
             logger=self.logger,
         )
