@@ -26,7 +26,7 @@ def test_lifecycle_state_contains_expected_states() -> None:
 
 
 def test_lifecycle_state_is_string_compatible() -> None:
-    assert LifecycleState.CREATED == "created"
-    assert LifecycleState.RUNNING == "running"
-    assert LifecycleState.DISPOSED == "disposed"
-    assert LifecycleState.FAILED == "failed"
+    assert LifecycleState.CREATED.value == "created"
+    assert LifecycleState.RUNNING.value == "running"
+    assert LifecycleState.DISPOSED.value == "disposed"
+    assert LifecycleState.FAILED.value == "failed"

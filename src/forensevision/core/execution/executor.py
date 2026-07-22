@@ -4,18 +4,31 @@ Ejecutores del Pipeline Execution Kernel.
 
 from __future__ import annotations
 
+from forensevision.core.execution.configuration import (
+    ExecutorConfiguration,
+)
 from forensevision.core.execution.context import ExecutionContext
+from forensevision.core.execution.executor_contract import (
+    PipelineExecutor,
+)
 from forensevision.core.execution.pipeline import Pipeline
 from forensevision.core.execution.result import PipelineResult, StepResult
 
 
-class SequentialExecutor:
+class SequentialExecutor(PipelineExecutor):
     """
     Ejecuta los pasos de un pipeline secuencialmente.
-
-    La política de ejecución es fail-fast: después del primer
-    fallo, los pasos restantes se registran como omitidos.
     """
+
+    def __init__(
+        self,
+        configuration: ExecutorConfiguration | None = None,
+    ) -> None:
+        self._configuration = (
+            configuration
+            if configuration is not None
+            else ExecutorConfiguration()
+        )
 
     def execute(
         self,
@@ -27,10 +40,10 @@ class SequentialExecutor:
         """
 
         results: list[StepResult] = []
-        failed = False
+        stop_execution = False
 
         for step in pipeline:
-            if failed:
+            if stop_execution:
                 results.append(
                     StepResult.skipped(step.name)
                 )
@@ -45,7 +58,8 @@ class SequentialExecutor:
                         error,
                     )
                 )
-                failed = True
+                if self._configuration.fail_fast:
+                    stop_execution = True
             else:
                 results.append(
                     StepResult.succeeded(step.name)

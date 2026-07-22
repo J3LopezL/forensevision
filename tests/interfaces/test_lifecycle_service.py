@@ -43,7 +43,7 @@ class CompleteLifecycleService(LifecycleService):
 
 def test_incomplete_lifecycle_service_cannot_be_instantiated() -> None:
     with pytest.raises(TypeError):
-        IncompleteLifecycleService()
+        IncompleteLifecycleService()  # type: ignore[abstract]
 
 
 def test_complete_lifecycle_service_can_be_instantiated() -> None:

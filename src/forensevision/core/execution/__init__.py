@@ -2,13 +2,22 @@
 Modelo de ejecución del Pipeline Kernel.
 """
 
+from forensevision.core.execution.configuration import (
+    ExecutorConfiguration,
+)
 from forensevision.core.execution.context import ContextKey, ExecutionContext
 from forensevision.core.execution.exceptions import (
     ContextKeyTypeConflictError,
     ExecutionError,
 )
 from forensevision.core.execution.executor import SequentialExecutor
+from forensevision.core.execution.executor_contract import (
+    PipelineExecutor,
+)
 from forensevision.core.execution.pipeline import Pipeline
+from forensevision.core.execution.report import (
+    ExecutionReport,
+)
 from forensevision.core.execution.result import PipelineResult, StepResult
 from forensevision.core.execution.status import StepStatus
 from forensevision.core.execution.step import PipelineStep
@@ -24,4 +33,9 @@ __all__ = [
     "SequentialExecutor",
     "StepResult",
     "StepStatus",
+    "PipelineExecutor",
+    "StepResult",
+    "StepStatus",
+    "ExecutorConfiguration",
+    "ExecutionReport",
 ]
