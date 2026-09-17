@@ -1,5 +1,7 @@
 """Tests for the Evidence aggregate root."""
 
+import pytest
+
 from forensevision.domain.evidence.evidence import Evidence
 from forensevision.domain.evidence.evidence_id import EvidenceId
 from forensevision.domain.evidence.evidence_integrity import (
@@ -10,6 +12,9 @@ from forensevision.domain.evidence.evidence_metadata import EvidenceMetadata
 from forensevision.domain.evidence.evidence_source import EvidenceSource
 from forensevision.domain.evidence.evidence_status import EvidenceStatus
 from forensevision.domain.evidence.evidence_type import EvidenceType
+from forensevision.domain.evidence.exceptions import (
+    InvalidEvidenceStatusTransitionError,
+)
 
 
 def create_evidence(
@@ -115,3 +120,51 @@ def test_evidence_status_is_read_only() -> None:
         pass
     else:
         raise AssertionError("Evidence status must be read-only.")
+
+def test_evidence_can_transition_through_complete_lifecycle() -> None:
+    evidence = create_evidence()
+
+    evidence.preserve()
+    assert evidence.status is EvidenceStatus.PRESERVED
+
+    evidence.process()
+    assert evidence.status is EvidenceStatus.PROCESSED
+
+    evidence.analyze()
+    assert evidence.status is EvidenceStatus.ANALYZED
+
+    evidence.archive()
+    assert evidence.status is EvidenceStatus.ARCHIVED
+
+def test_evidence_rejects_skipping_lifecycle_states() -> None:
+    evidence = create_evidence()
+
+    try:
+        evidence.process()
+    except InvalidEvidenceStatusTransitionError:
+        pass
+    else:
+        raise AssertionError(
+            "Evidence must not skip the preservation state."
+        )
+
+@pytest.mark.parametrize(
+    ("method_name", "expected_status"),
+    [
+        ("process", EvidenceStatus.PROCESSED),
+        ("analyze", EvidenceStatus.ANALYZED),
+        ("archive", EvidenceStatus.ARCHIVED),
+    ],
+)
+def test_evidence_rejects_invalid_initial_transitions(
+    method_name,
+    expected_status,
+):
+    evidence = create_evidence()
+
+    with pytest.raises(InvalidEvidenceStatusTransitionError) as exc_info:
+        getattr(evidence, method_name)()
+
+    assert evidence.status is EvidenceStatus.REGISTERED
+    assert exc_info.value.current_status is EvidenceStatus.REGISTERED
+    assert exc_info.value.requested_status is expected_status

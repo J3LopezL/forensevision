@@ -10,6 +10,9 @@ from forensevision.domain.evidence.evidence_metadata import EvidenceMetadata
 from forensevision.domain.evidence.evidence_source import EvidenceSource
 from forensevision.domain.evidence.evidence_status import EvidenceStatus
 from forensevision.domain.evidence.evidence_type import EvidenceType
+from forensevision.domain.evidence.exceptions import (
+    InvalidEvidenceStatusTransitionError,
+)
 
 
 class Evidence:
@@ -68,6 +71,39 @@ class Evidence:
     def status(self) -> EvidenceStatus:
         """Return the current lifecycle status of the evidence."""
         return self._status
+
+    def preserve(self) -> None:
+        """Transition evidence from registered to preserved."""
+        self._transition_to(EvidenceStatus.PRESERVED)
+
+    def process(self) -> None:
+        """Transition evidence from preserved to processed."""
+        self._transition_to(EvidenceStatus.PROCESSED)
+
+    def analyze(self) -> None:
+        """Transition evidence from processed to analyzed."""
+        self._transition_to(EvidenceStatus.ANALYZED)
+
+    def archive(self) -> None:
+        """Transition evidence from analyzed to archived."""
+        self._transition_to(EvidenceStatus.ARCHIVED)
+
+    def _transition_to(self, requested_status: EvidenceStatus) -> None:
+        """Apply a valid lifecycle transition."""
+        allowed_transition = {
+            EvidenceStatus.REGISTERED: EvidenceStatus.PRESERVED,
+            EvidenceStatus.PRESERVED: EvidenceStatus.PROCESSED,
+            EvidenceStatus.PROCESSED: EvidenceStatus.ANALYZED,
+            EvidenceStatus.ANALYZED: EvidenceStatus.ARCHIVED,
+        }.get(self._status)
+
+        if allowed_transition is not requested_status:
+            raise InvalidEvidenceStatusTransitionError(
+                current_status=self._status,
+                requested_status=requested_status,
+            )
+
+        self._status = requested_status
 
     def __eq__(self, other: Any) -> bool:
         """Compare evidence entities by their identity."""
