@@ -8,6 +8,7 @@ from forensevision.domain.evidence.evidence_integrity import (
 )
 from forensevision.domain.evidence.evidence_metadata import EvidenceMetadata
 from forensevision.domain.evidence.evidence_source import EvidenceSource
+from forensevision.domain.evidence.evidence_status import EvidenceStatus
 from forensevision.domain.evidence.evidence_type import EvidenceType
 
 
@@ -49,6 +50,7 @@ def test_evidence_exposes_all_required_components() -> None:
     assert isinstance(evidence.metadata, EvidenceMetadata)
     assert isinstance(evidence.source, EvidenceSource)
     assert isinstance(evidence.integrity, EvidenceIntegrity)
+    assert isinstance(evidence.status, EvidenceStatus)
 
 
 def test_evidence_identity_is_based_on_evidence_id() -> None:
@@ -97,3 +99,19 @@ def test_evidence_components_are_value_objects() -> None:
         algorithm=HashAlgorithm.SHA256,
         value="a" * 64,
     )
+
+def test_evidence_starts_with_registered_status() -> None:
+    evidence = create_evidence()
+
+    assert evidence.status is EvidenceStatus.REGISTERED
+
+
+def test_evidence_status_is_read_only() -> None:
+    evidence = create_evidence()
+
+    try:
+        evidence.status = EvidenceStatus.ANALYZED  # type: ignore[misc]
+    except AttributeError:
+        pass
+    else:
+        raise AssertionError("Evidence status must be read-only.")

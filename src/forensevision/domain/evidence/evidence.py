@@ -8,6 +8,7 @@ from forensevision.domain.evidence.evidence_id import EvidenceId
 from forensevision.domain.evidence.evidence_integrity import EvidenceIntegrity
 from forensevision.domain.evidence.evidence_metadata import EvidenceMetadata
 from forensevision.domain.evidence.evidence_source import EvidenceSource
+from forensevision.domain.evidence.evidence_status import EvidenceStatus
 from forensevision.domain.evidence.evidence_type import EvidenceType
 
 
@@ -20,6 +21,7 @@ class Evidence:
         "_metadata",
         "_source",
         "_integrity",
+        "_status",
     )
 
     def __init__(
@@ -35,6 +37,7 @@ class Evidence:
         self._metadata = metadata
         self._source = source
         self._integrity = integrity
+        self._status = EvidenceStatus.REGISTERED
 
     @property
     def evidence_id(self) -> EvidenceId:
@@ -60,6 +63,11 @@ class Evidence:
     def integrity(self) -> EvidenceIntegrity:
         """Return the cryptographic integrity information."""
         return self._integrity
+
+    @property
+    def status(self) -> EvidenceStatus:
+        """Return the current lifecycle status of the evidence."""
+        return self._status
 
     def __eq__(self, other: Any) -> bool:
         """Compare evidence entities by their identity."""
