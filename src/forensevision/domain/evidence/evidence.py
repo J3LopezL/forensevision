@@ -6,6 +6,7 @@ from typing import Any
 
 from forensevision.domain.evidence.evidence_id import EvidenceId
 from forensevision.domain.evidence.evidence_integrity import EvidenceIntegrity
+from forensevision.domain.evidence.evidence_lifecycle import EvidenceLifecycle
 from forensevision.domain.evidence.evidence_metadata import EvidenceMetadata
 from forensevision.domain.evidence.evidence_source import EvidenceSource
 from forensevision.domain.evidence.evidence_status import EvidenceStatus
@@ -90,14 +91,10 @@ class Evidence:
 
     def _transition_to(self, requested_status: EvidenceStatus) -> None:
         """Apply a valid lifecycle transition."""
-        allowed_transition = {
-            EvidenceStatus.REGISTERED: EvidenceStatus.PRESERVED,
-            EvidenceStatus.PRESERVED: EvidenceStatus.PROCESSED,
-            EvidenceStatus.PROCESSED: EvidenceStatus.ANALYZED,
-            EvidenceStatus.ANALYZED: EvidenceStatus.ARCHIVED,
-        }.get(self._status)
-
-        if allowed_transition is not requested_status:
+        if not EvidenceLifecycle.is_valid_transition(
+            self._status,
+            requested_status,
+        ):
             raise InvalidEvidenceStatusTransitionError(
                 current_status=self._status,
                 requested_status=requested_status,

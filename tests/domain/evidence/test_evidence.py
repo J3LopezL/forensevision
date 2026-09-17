@@ -8,6 +8,7 @@ from forensevision.domain.evidence.evidence_integrity import (
     EvidenceIntegrity,
     HashAlgorithm,
 )
+from forensevision.domain.evidence.evidence_lifecycle import EvidenceLifecycle
 from forensevision.domain.evidence.evidence_metadata import EvidenceMetadata
 from forensevision.domain.evidence.evidence_source import EvidenceSource
 from forensevision.domain.evidence.evidence_status import EvidenceStatus
@@ -105,6 +106,7 @@ def test_evidence_components_are_value_objects() -> None:
         value="a" * 64,
     )
 
+
 def test_evidence_starts_with_registered_status() -> None:
     evidence = create_evidence()
 
@@ -121,6 +123,7 @@ def test_evidence_status_is_read_only() -> None:
     else:
         raise AssertionError("Evidence status must be read-only.")
 
+
 def test_evidence_can_transition_through_complete_lifecycle() -> None:
     evidence = create_evidence()
 
@@ -136,17 +139,15 @@ def test_evidence_can_transition_through_complete_lifecycle() -> None:
     evidence.archive()
     assert evidence.status is EvidenceStatus.ARCHIVED
 
+
 def test_evidence_rejects_skipping_lifecycle_states() -> None:
     evidence = create_evidence()
 
-    try:
+    with pytest.raises(InvalidEvidenceStatusTransitionError):
         evidence.process()
-    except InvalidEvidenceStatusTransitionError:
-        pass
-    else:
-        raise AssertionError(
-            "Evidence must not skip the preservation state."
-        )
+
+    assert evidence.status is EvidenceStatus.REGISTERED
+
 
 @pytest.mark.parametrize(
     ("method_name", "expected_status"),
@@ -157,9 +158,9 @@ def test_evidence_rejects_skipping_lifecycle_states() -> None:
     ],
 )
 def test_evidence_rejects_invalid_initial_transitions(
-    method_name,
-    expected_status,
-):
+    method_name: str,
+    expected_status: EvidenceStatus,
+) -> None:
     evidence = create_evidence()
 
     with pytest.raises(InvalidEvidenceStatusTransitionError) as exc_info:
@@ -168,3 +169,16 @@ def test_evidence_rejects_invalid_initial_transitions(
     assert evidence.status is EvidenceStatus.REGISTERED
     assert exc_info.value.current_status is EvidenceStatus.REGISTERED
     assert exc_info.value.requested_status is expected_status
+
+
+def test_evidence_uses_lifecycle_policy_for_valid_transition() -> None:
+    evidence = create_evidence()
+
+    assert EvidenceLifecycle.is_valid_transition(
+        EvidenceStatus.REGISTERED,
+        EvidenceStatus.PRESERVED,
+    )
+
+    evidence.preserve()
+
+    assert evidence.status is EvidenceStatus.PRESERVED
